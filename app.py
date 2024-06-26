@@ -1,8 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from PIL import Image, ImageOps
 import os
 
-# from image_transform import transform_image, save_image
+from image_transformer import transform_image, save_image_locally
+
+
+############### CONFIG ###################
+IMAGE_STORE_DIR_PATH = 'static'
+##########################################
+
 
 app = Flask(__name__)
 
@@ -13,28 +19,20 @@ def index():
 @app.route('/process', methods=['POST'])
 def process():
     file = request.files['image']
-    if file:
+    save_path = get_image_save_path()
+
+    if file and save_path:
         image = Image.open(file).convert('L')
         transformed_image = transform_image(image)
-        save_image(transformed_image)
-        return "Image processed and saved successfully!"
+        save_image_locally(transformed_image, save_path)
+        
+        return send_file(save_path, as_attachment=True)
     else:
-        return "Error: No image file received"
+        return "Error: No image file or save path received"
 
-def transform_image(image):
-    # Apply the transformation to extract the signature lines
-    threshold = 128
-    transformed_image = image.point(lambda pixel: 255 if pixel > threshold else 0)
-    return transformed_image
-
-def save_image(image):
-    save_path = 'static/transformed_image.png'
-    abs_dir_path = os.path.dirname(os.path.abspath(save_path))
-    
-    if not os.path.exists(abs_dir_path):
-        os.makedirs(abs_dir_path, exist_ok=True)
-    
-    image.save(save_path)
+def get_image_save_path():
+    filename = 'processed_image.jpeg'
+    return os.path.join(IMAGE_STORE_DIR_PATH, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
