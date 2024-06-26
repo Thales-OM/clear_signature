@@ -10,6 +10,8 @@ package-mode = false
 python = "^3.9"
 tk = "^0.1.0"
 pillow = "^10.3.0"
+flask = "^3.0.3"
+waitress = "^3.0.0"
 
 
 [build-system]

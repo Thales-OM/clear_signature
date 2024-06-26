@@ -18,10 +18,14 @@ def save_image(image):
     save_path = filedialog.asksaveasfilename(defaultextension=".png")
     image.save(save_path)
 
-root = tk.Tk()
-root.title("Signature Extraction App")
+def main():
+    root = tk.Tk()
+    root.title("Signature Extraction App")
 
-open_button = tk.Button(root, text="Open Image", command=open_image)
-open_button.pack()
+    open_button = tk.Button(root, text="Open Image", command=open_image)
+    open_button.pack()
 
-root.mainloop()
+    root.mainloop()
+
+if __name__ == '__main__':
+    main()
