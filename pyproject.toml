@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "clear-signature"
+version = "0.1.0"
+description = "Clears up a hand-written signature picture"
+authors = ["Thales-OM <pugin2011ilya@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+tk = "^0.1.0"
+pillow = "^10.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
