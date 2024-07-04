@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, send_file
 from PIL import Image, ImageOps
 import os
+from waitress import serve
 
 from image_transformer import transform_image, save_image_locally
 
@@ -35,4 +36,4 @@ def get_image_save_path():
     return os.path.join(IMAGE_STORE_DIR_PATH, filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    serve(app, listen='*:8000')
