@@ -26,7 +26,27 @@ ENV PYTHONUNBUFFERED=1 \
     # do not ask any interactive question
     POETRY_NO_INTERACTION=1 
 
+# Set working directory
 WORKDIR /app
+
+# Install Poetry
+RUN pip install poetry==${POETRY_VERSION}
+
+# Activate the virtual environment
+ENV VIRTUAL_ENV=/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Copy pyproject.toml and poetry.lock to the working directory
+COPY pyproject.toml poetry.lock ./
+
+RUN apt-get update && apt-get install -y tk
+
+# Use Poetry to install dependencies
+RUN poetry install --no-interaction --no-root
+
+# Copy the source code into the image
+COPY . .
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
@@ -40,30 +60,15 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-# Create necessary directories
-# RUN mkdir -p ${POETRY_CACHE_DIR} \
-    # && mkdir -p ${POETRY_HOME}
-
-# install poetry - respects $POETRY_VERSION & $POETRY_HOME
-# RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-# RUN curl -sSL https://install.python-poetry.org | POETRY_VERSION=${POETRY_VERSION} POETRY_HOME=${POETRY_HOME} python
-RUN python -m pip install poetry
-
-# Copy the source code into the container.
-# Including packages, pyproject.toml, poetry.lock
-COPY . /app/
-
-# Copy the pyproject.toml and poetry.lock files into the container
-COPY pyproject.toml poetry.lock /app/
-
-# Install project dependencies
-RUN python -m poetry install --no-root --no-interaction --no-ansi
-
-# Switch to the non-privileged user to run the application.
-USER appuser
-
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 # Run the application.
-CMD ["python","app.py"]
+# CMD ["python","app.py"]
+# CMD ["/venv/bin/activate", "&&", "python", "app.py"]
+CMD ["/venv/bin/activate"]
+
+# Switch to the non-privileged user to run the application.
+USER appuser
+
+CMD ["python", "app.py"]
