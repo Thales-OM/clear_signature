@@ -1,3 +1,8 @@
 __pycache__
 .venv
-static
+
+# Ignore everything in the static directory
+/static/*
+
+# Except for styles.css
+!/static/styles.css
